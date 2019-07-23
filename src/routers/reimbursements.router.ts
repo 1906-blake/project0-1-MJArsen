@@ -27,7 +27,6 @@ reimbursementsRouter.post('', (req, res) => {
 });
 
 /**
- * 
  * Allowed role: finance-manager
  */
 reimbursementsRouter.patch('', (req, res) => {

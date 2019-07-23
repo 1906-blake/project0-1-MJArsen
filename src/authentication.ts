@@ -7,7 +7,7 @@ export default function permit(...allowed) {
     if (request.user && isAllowed(request.user.role))
       next();
     else {
-      response.status(403).json({ message: "Forbidden" });
+      response.status(403).json({ message: 'Forbidden' });
     }
-  }
+  };
 }

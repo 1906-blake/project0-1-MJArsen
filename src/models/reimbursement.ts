@@ -1,3 +1,5 @@
+import User from './user';
+
 export default class Reimbursement {
     reimbursementId: number;    // primary key
     author: number;             // foreign key -> User, not null
@@ -5,7 +7,7 @@ export default class Reimbursement {
     dateSubmitted: number;      // not null
     dateResolved: number;
     description: string;        // not null
-    resolver: number;           // foreign key -> User
+    resolver: User;             // foreign key -> User
     status: number;             // foreign ey -> ReimbursementStatus, not null
     type: number;               // foreign key -> ReimbursementType
 

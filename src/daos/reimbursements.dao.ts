@@ -22,9 +22,9 @@ export function patch(reimbursement: Partial<Reimbursements>) {
             return {
                 ...ele,
                 ...reimbursement
-            }
+            };
         } else {
-            return ele
+            return ele;
         }
     });
 }

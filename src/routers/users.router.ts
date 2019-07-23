@@ -7,12 +7,16 @@ export const usersRouter = express.Router();
 
 /**
  * /users
- * find all users 
+ * find all users
  * Allowed roles: finance-manager (to be implamented later)
  */
-usersRouter.get('', (req, res) => {
-    res.json(userDao.findAll());
-});
+
+usersRouter.get('', [
+    //authMiddleware('admin', 'manager'),
+    async (req, res) => {
+        const users = await userDao.findAll();
+        res.json(users);
+    }]);
 
 
 /**

@@ -210,7 +210,7 @@ Reimbursements should be ordered by date
 * **Method:**
   `POST`
 
-* **Rquest:**
+* **Request:**
   The reimbursementId should be 0
   ```javascript
   Reimbursement
@@ -246,6 +246,6 @@ Reimbursements should be ordered by date
 # Stretch Goals
 These are not part of the core requirements but are things that could be worked on once the core requirements are done.
   * Password Hashing
-  * Paging ans Sorting endpoints: [Reference For How](https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design#filter-and-paginate-data)
+  * Paging and Sorting endpoints: [Reference For How](https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design#filter-and-paginate-data)
   * Using JSON Web Tokens (JWTs) instead of Session Storage
   * Being able to submit receipts. (I would recommend using AWS S3 buckets for this but if you do be cautious of including AWS Access Keys in your application)
