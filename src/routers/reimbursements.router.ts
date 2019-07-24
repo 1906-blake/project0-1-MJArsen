@@ -1,22 +1,20 @@
 import express from 'express';
-
 import * as reimbursementsDao from '../daos/reimbursements.dao';
-import * as usersDao from '../daos/users.dao';
+
 
 export const reimbursementsRouter = express.Router();
 
-reimbursementsRouter.get('/status/:statusId', (req, res) => {
-    const statusId = req.params.statusId;
-    const reimbursements = reimbursementsDao.findByStatusId(statusId);
-    res.json(reimbursements);
-});
+reimbursementsRouter.get('/status/:statusId',
+    async (req, res) => {
+        const reim = await reimbursementsDao.findByStatusId(+req.params.statusId);
+        res.json(reim);
+    });
 
-reimbursementsRouter.get('/author/userId/:userId/date-submitted?start=:startDate&end=:endDate', (req, res) => {
-    const userId = req.params.userId;
-    const users = usersDao.findByUserid(userId);
-    res.json(users);
-});
-
+reimbursementsRouter.get('/author/:userId',
+    async (req, res) => {
+        const reimbursements = await reimbursementsDao.findByAuthorId(req.params.userId);
+        res.json(reimbursements);
+    });
 
 reimbursementsRouter.post('', (req, res) => {
     const reimbursements = req.body;
@@ -30,7 +28,7 @@ reimbursementsRouter.post('', (req, res) => {
  * Allowed role: finance-manager
  */
 reimbursementsRouter.patch('', (req, res) => {
-    const reimbursement = reimbursementsDao.findByUser(req.params.userId);
+    const reimbursement = reimbursementsDao.findByAuthorId(req.params.userId);
     reimbursementsDao.patch(req.body);
     res.send(reimbursement);
 });

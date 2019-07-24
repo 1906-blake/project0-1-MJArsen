@@ -26,9 +26,9 @@ usersRouter.get('',
  */
 usersRouter.get('/:id',
     async (req, res) => {
-    const user = await userDao.findByUserid(+req.params.id);
-    res.json(user);
-});
+        const user = await userDao.findByUserid(+req.params.id);
+        res.json(user);
+    });
 
 /**
  * /users
@@ -36,6 +36,7 @@ usersRouter.get('/:id',
  * Allowed roles: admin
  */
 usersRouter.patch('', (req, res) => {
+    console.log(req.body);
     const user = userDao.findByUserid(+req.params.id);
     userDao.patch(req.body);
     res.json(user);
