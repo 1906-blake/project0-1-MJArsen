@@ -11,8 +11,8 @@ export async function findAll() {
     console.log('finding all users');
     let client: PoolClient;
     try {
-        client = await connectionPool.connect(); // basically .then is everything after this
-        const result = await client.query('SELECT * FROM app_user');
+        client = await connectionPool.connect();
+        const result = await client.query('SELECT employee.username, employee.first_name, employee.last_name, employee.email, roles.role FROM employee INNER JOIN roles ON employee.roles = roles.role_id;');
         // convert result from sql object to js object
         return result.rows.map(convertSqlUser);
     } catch (err) {
@@ -24,8 +24,20 @@ export async function findAll() {
     return undefined;
 }
 
-export function findByUserid(userId: number) {
-    return users.filter(user => user.userId === userId)[0];
+export async function findByUserid(userId: number) {
+    console.log('finding user by id: ' + userId);
+    let client: PoolClient;
+    try {
+        client = await connectionPool.connect(); // basically .then is everything after this
+        const result = await client.query('SELECT employee.username, employee.first_name, employee.last_name, employee.email, roles.role FROM employee INNER JOIN roles ON employee.roles = roles.role_id WHERE employee_id = $1', [userId]);
+        const sqlUser = result.rows[0];
+        return sqlUser && convertSqlUser(sqlUser);
+    } catch (err) {
+        console.log(err);
+    } finally {
+        client && client.release();
+    }
+    return undefined;
 }
 
 export async function save(user?: User) {

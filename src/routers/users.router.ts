@@ -11,12 +11,12 @@ export const usersRouter = express.Router();
  * Allowed roles: finance-manager (to be implamented later)
  */
 
-usersRouter.get('', [
-    //authMiddleware('admin', 'manager'),
+usersRouter.get('',
+    // authMiddleware('admin', 'manager'),
     async (req, res) => {
         const users = await userDao.findAll();
         res.json(users);
-    }]);
+    });
 
 
 /**
@@ -24,8 +24,9 @@ usersRouter.get('', [
  * find user by id
  * Allowed roles: finance-managers, or if the id provided matches the id of the current user
  */
-usersRouter.get('/:id', (req, res) => {
-    const user = userDao.findByUserid(+req.params.id);
+usersRouter.get('/:id',
+    async (req, res) => {
+    const user = await userDao.findByUserid(+req.params.id);
     res.json(user);
 });
 

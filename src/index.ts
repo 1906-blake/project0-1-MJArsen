@@ -8,7 +8,7 @@ import { usersRouter } from './routers/users.router';
 import { reimbursementsRouter } from './routers/reimbursements.router';
 
 // specify the port will run on
-const port = process.env.PORT || 5432;
+const port = 8012;
 const app = express();
 
 // will authenticate each request and set request.user for other middleware (testing it out at a later point)
