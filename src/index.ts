@@ -2,13 +2,13 @@ import express from 'express';
 import bodyParser from 'body-parser';
 
 // import authenticate from './authentication'; //testing an authentication middleware
-
-import { loginRouter } from './routers/login.router';
+import { sessionMiddleware } from './middleware/session.middleware';
+import { authRouter } from './routers/auth.router';
 import { usersRouter } from './routers/users.router';
 import { reimbursementsRouter } from './routers/reimbursements.router';
 
 // specify the port will run on
-const port = 8012;
+const port = process.env.PORT || 8012;
 const app = express();
 
 // will authenticate each request and set request.user for other middleware (testing it out at a later point)
@@ -27,12 +27,26 @@ app.use((req, res, next) => {
 // set up body parser to convert json body to object stored on req.body
 app.use(bodyParser.json());
 
+app.use(sessionMiddleware);
+
 /*******************************************
  * Register Routers
  ******************************************/
-app.use('/login', loginRouter);
+app.use(authRouter);
 app.use('/users', usersRouter);
 app.use('/reimbursements', reimbursementsRouter);
+
+/*******************************************
+ * Needed for Project 1??
+ ******************************************/
+app.use((req, resp, next) => {
+    console.log(req.get('host'));
+    resp.header('Access-Control-Allow-Origin', `${req.headers.origin}`);
+    resp.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    resp.header('Access-Control-Allow-Credentials', 'true');
+    resp.header('Access-Control-Allow-Methods', 'POST, GET, DELETE, PUT, PATCH');
+    next();
+  });
 
 app.listen(port, () => {
     console.log('app started on port: ' + port);

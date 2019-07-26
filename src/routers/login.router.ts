@@ -10,7 +10,7 @@ loginRouter.post('', (req, res) => {
             error: 'Invalid Credentials'
         });
     }
-    usersDao.save(user);
+    usersDao.saveNewUser(user);
 
     res.status(201); // created status code
     res.json(user);

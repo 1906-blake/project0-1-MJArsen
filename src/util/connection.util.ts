@@ -1,10 +1,10 @@
 import { Pool } from 'pg';
 
 const connectionConfiguration = {
-    user: 'Postgres',
-    host: 'demo-db.chloflhomsu6.us-east-2.rds.amazonaws.com',
-    database: 'project_zero',
-    password: 'darkwave',
+    user: process.env.PRO_0_USERNAME,
+    host: process.env.PRO_0_HOST || 'localhost',
+    database: process.env.PRO_0_DBNAME || 'project_zero',
+    password: process.env.PRO_0_PASSWORD,
     port: 5432,
     max: 5
 };

@@ -32,12 +32,15 @@ usersRouter.get('/:id',
 
 /**
  * /users
- * partially update user resource
+ * partially update user resource(s)
  * Allowed roles: admin
  */
-usersRouter.patch('', (req, res) => {
-    console.log(req.body);
-    const user = userDao.findByUserid(+req.params.id);
-    userDao.patch(req.body);
+usersRouter.patch('', async (req, res) => {
+    const result  = req.body;
+    console.log('patch result= ' + result + ' req.body = ' + req.body);
+    const user = await userDao.updateUser(result);
     res.json(user);
+    // } else {
+        // res.sendStatus(403);
+    // }
 });

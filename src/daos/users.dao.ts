@@ -3,16 +3,27 @@ import { connectionPool } from '../util/connection.util';
 import { PoolClient } from 'pg';
 import { convertSqlUser } from '../util/user.converter';
 
-// let users: User[] = [
-
-// ];
+// let users: User[] = [];
 
 export async function findAll() {
     console.log('finding all users');
     let client: PoolClient;
     try {
         client = await connectionPool.connect();
-        const result = await client.query('SELECT employee.username, employee.first_name, employee.last_name, employee.email, roles.role FROM employee INNER JOIN roles ON employee.roles = roles.role_id;');
+        // create the SQL query to be sent to the DB
+        const result = await client.query(`
+        SELECT
+            employee.employee_id,
+            employee.username,
+            employee.first_name,
+            employee.last_name,
+            employee.email,
+            employee.roles,
+            roles.role
+        FROM employee
+        INNER JOIN roles
+        ON employee.roles = roles.role_id;
+        `);
         // convert result from sql object to js object
         return result.rows.map(convertSqlUser);
     } catch (err) {
@@ -28,9 +39,15 @@ export async function findByUserid(userId: number) {
     console.log('finding user by id: ' + userId);
     let client: PoolClient;
     try {
-        client = await connectionPool.connect(); // basically .then is everything after this
-        const result = await client.query('SELECT employee.username, employee.first_name, employee.last_name, employee.email, roles.role FROM employee INNER JOIN roles ON employee.roles = roles.role_id WHERE employee_id = $1', [userId]);
+        client = await connectionPool.connect();
+        const result = await client.query(`
+        SELECT * FROM employee
+        INNER JOIN roles
+        ON employee.roles = roles.role_id
+        WHERE employee_id = $1`
+        , [userId]);
         const sqlUser = result.rows[0];
+        // if a user is found, convert it to an JS object and return it. Otherwise, return the empty user
         return sqlUser && convertSqlUser(sqlUser);
     } catch (err) {
         console.log(err);
@@ -40,14 +57,35 @@ export async function findByUserid(userId: number) {
     return undefined;
 }
 
-export async function save(user: User) {
+export async function findByUsernameAndPassword(username: string, password: string) {
+    console.log('inside findByUsernameAndPassword');
     let client: PoolClient;
     try {
-        client = await connectionPool.connect(); // basically .then is everything after this
+        client = await connectionPool.connect();
         const queryString = `
-            INSERT INTO app_user (username, pass, first_name, last_name, email, role)
+            SELECT * FROM employee
+                WHERE username = $1 AND pass = $2
+        `;
+        const result = await client.query(queryString, [username, password]);
+        const sqlUser = result.rows[0];
+        console.log(sqlUser);
+        return sqlUser && convertSqlUser(sqlUser);
+    } catch (err) {
+        console.log(err);
+    } finally {
+        client && client.release();
+    }
+    return undefined;
+}
+
+export async function saveNewUser(user: User) {
+    let client: PoolClient;
+    try {
+        client = await connectionPool.connect();
+        const queryString = `
+            INSERT INTO employee (username, pass, first_name, last_name, email, roles)
             VALUES 	($1, $2, $3, $4, $5, $6)
-            RETURNING user_id
+            RETURNING employee_id
         `;
         const params = [user.username, user.password, user.firstName, user.lastName, user.email, user.role];
         const result = await client.query(queryString, params);
@@ -61,8 +99,10 @@ export async function save(user: User) {
     return undefined;
 }
 
-export async function patch(user: Partial<User>) {
-    const oldUser = await findByUserid(user.userId);
+export async function updateUser(user: User) {
+    console.log('updateing: ' + user.userId);
+    const oldUser = await findByUserid(+ user.userId);
+    console.log('oldUser: ' + oldUser + 'oldUser.role: ' + oldUser.role);
     if (!oldUser) {
         return undefined;
     }
@@ -75,14 +115,11 @@ export async function patch(user: Partial<User>) {
     try {
         client = await connectionPool.connect(); // basically .then is everything after this
         const queryString = `
-            UPDATE app_user SET username = $1, pass = $2, first_name = $3, last_name = $4, email = $5, role = $6
-            WHERE user_id = $7
-            RETURNING *
-        `;
+            UPDATE employee SET username = $1, pass = $2, first_name = $3, last_name = $4, email = $5, roles = $6
+            WHERE employee_id = $7`;
         const params = [user.username, user.password, user.firstName, user.lastName, user.email, user.role, user.userId];
-        const result = await client.query(queryString, params);
-        const sqlUser = result.rows[0];
-        return convertSqlUser(sqlUser);
+        await client.query(queryString, params);
+        return convertSqlUser(user); // returns JS notation instead of SQL notation
     } catch (err) {
         console.log(err);
     } finally {
