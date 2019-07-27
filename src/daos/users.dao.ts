@@ -12,17 +12,8 @@ export async function findAll() {
         client = await connectionPool.connect();
         // create the SQL query to be sent to the DB
         const result = await client.query(`
-        SELECT
-            employee.employee_id,
-            employee.username,
-            employee.first_name,
-            employee.last_name,
-            employee.email,
-            employee.roles,
-            roles.role
-        FROM employee
-        INNER JOIN roles
-        ON employee.roles = roles.role_id;
+        SELECT * FROM employee
+        LEFT JOIN roles USING (role_id);
         `);
         // convert result from sql object to js object
         return result.rows.map(convertSqlUser);
@@ -42,8 +33,7 @@ export async function findByUserid(userId: number) {
         client = await connectionPool.connect();
         const result = await client.query(`
         SELECT * FROM employee
-        INNER JOIN roles
-        ON employee.roles = roles.role_id
+        LEFT JOIN roles USING (role_id)
         WHERE employee_id = $1`
         , [userId]);
         const sqlUser = result.rows[0];
@@ -63,8 +53,9 @@ export async function findByUsernameAndPassword(username: string, password: stri
     try {
         client = await connectionPool.connect();
         const queryString = `
-            SELECT * FROM employee
-                WHERE username = $1 AND pass = $2
+        SELECT * FROM employee
+        LEFT JOIN roles USING (role_id)
+        WHERE username = $1 AND pass = $2
         `;
         const result = await client.query(queryString, [username, password]);
         const sqlUser = result.rows[0];
@@ -83,7 +74,7 @@ export async function saveNewUser(user: User) {
     try {
         client = await connectionPool.connect();
         const queryString = `
-            INSERT INTO employee (username, pass, first_name, last_name, email, roles)
+            INSERT INTO employee (username, pass, first_name, last_name, email, role)
             VALUES 	($1, $2, $3, $4, $5, $6)
             RETURNING employee_id
         `;
@@ -100,9 +91,9 @@ export async function saveNewUser(user: User) {
 }
 
 export async function updateUser(user: User) {
-    console.log('updateing: ' + user.userId);
+    // console.log('updateing: ' + user.userId);
     const oldUser = await findByUserid(+ user.userId);
-    console.log('oldUser: ' + oldUser + 'oldUser.role: ' + oldUser.role);
+    // console.log('oldUser: ' + oldUser + 'oldUser.role: ' + oldUser.role);
     if (!oldUser) {
         return undefined;
     }
@@ -115,7 +106,7 @@ export async function updateUser(user: User) {
     try {
         client = await connectionPool.connect(); // basically .then is everything after this
         const queryString = `
-            UPDATE employee SET username = $1, pass = $2, first_name = $3, last_name = $4, email = $5, roles = $6
+            UPDATE employee SET username = $1, pass = $2, first_name = $3, last_name = $4, email = $5, role = $6
             WHERE employee_id = $7`;
         const params = [user.username, user.password, user.firstName, user.lastName, user.email, user.role, user.userId];
         await client.query(queryString, params);

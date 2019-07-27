@@ -131,7 +131,7 @@ export async function patch(reim: Reimbursements) {
 
 /**
  * Creates a new Reimbursement Request
- * @param reimbursement Reimbursement JSON
+ * @param reimbursement Reimbursements JSON
  * (Working)
  */
 export async function submitReim(reimbursement: Reimbursements) {
@@ -157,6 +157,9 @@ export async function submitReim(reimbursement: Reimbursements) {
     return undefined;
 }
 
+/**
+ * Used to get the current date to be input into Reim Updates
+ */
 function getToday() {
 
     const today = new Date();

@@ -1,7 +1,6 @@
 import express from 'express';
 import * as reimbursementsDao from '../daos/reimbursements.dao';
-
-
+import { authMiddleware } from '../middleware/auth.middleware';
 export const reimbursementsRouter = express.Router();
 
 /*************************************************
@@ -46,9 +45,8 @@ reimbursementsRouter.post('', async (req, res) => {
 /**
  * Allowed role: finance-manager / The Coon
  */
-reimbursementsRouter.patch('', async (req, res) => {
-    console.log('In Reim PATCH');
-    console.log(req.body);
+reimbursementsRouter.patch('', [authMiddleware('admin', 'finance-manager', 'The Coon'),
+    async (req, res) => {
     const result = await reimbursementsDao.patch(req.body);
     res.send(result);
-});
+}]);

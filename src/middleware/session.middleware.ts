@@ -1,7 +1,7 @@
 import session from 'express-session';
 
 const sessionConfiguration = {
-    secret: 'magic',
+    secret: 'flak',
     cookie: { secure: false },
 };
 

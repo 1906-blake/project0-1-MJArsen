@@ -5,7 +5,7 @@ export const authRouter = express.Router();
 
 authRouter.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    console.log('req.body: ' + req.body);
+    console.log('req.body: ' + req.body.username + ', ' + req.body.password);
     const user = await UserDao.findByUsernameAndPassword(username, password);
     if (user) {
         req.session.user = user;

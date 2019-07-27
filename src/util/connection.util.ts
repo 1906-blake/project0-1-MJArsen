@@ -9,5 +9,5 @@ const connectionConfiguration = {
     max: 5
 };
 
-console.log(connectionConfiguration);
+
 export const connectionPool = new Pool(connectionConfiguration);
