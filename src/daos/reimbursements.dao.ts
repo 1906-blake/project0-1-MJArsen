@@ -38,15 +38,25 @@ export async function findByStatusId(statusId: number) {
     return undefined;
 }
 
-export async function findByAuthorId(userId: number) {
-    console.log('finding reimbursement by author: ' + userId);
+export async function findByAuthorId(authId: number) {
+    console.log('finding reimbursement by author: ' + authId);
     let client: PoolClient;
     try {
         client = await connectionPool.connect();
         const result = await client.query(`
-        SELECT * FROM reimbursement WHERE author = $1`, [userId]);
-        const sqlReim = result.rows[0];
-        return sqlReim && convertSqlReim(sqlReim);
+        SELECT * FROM reimbursement
+        LEFT JOIN employee AS au ON au.employee_id = reimbursement.author
+		LEFT JOIN employee AS RS ON RS.employee_id = reimbursement.resolver
+		INNER JOIN reimbursement_status ON reimbursement.status = reimbursement_status.status_id
+		INNER JOIN reimbursement_type ON reimbursement.status = reimbursement_type.type_id
+        WHERE reimbursement.author = $1`
+        , [authId]);
+        const sqlReim = result.rows.map(convertSqlReim);
+
+        // sqlReim.forEach(function(element) {
+        //     console.log(element);
+        // });
+        return sqlReim; // && convertSqlReim(sqlReim);
     } catch (err) {
         console.log(err);
     } finally {
@@ -105,19 +115,31 @@ export async function patch(reim: Reimbursements) {
         console.log('nothing in oldReimbursement');
         return undefined;
     }
+    console.log('oldReim: ' + oldReimbursement.reimbursementId);
+    console.log('reim: ' + reim.reimbursementId);
     reim = {
         ...oldReimbursement,
         ...reim
     };
-    // console.log('reimbursement_type: ' + reim.);
+    console.log('reim.amount: ' + reim.amount);
+    console.log('reim.author: ' + reim.author.userId);
+    console.log('reim.dateSubmitted: ' + reim.dateSubmitted);
+    console.log('reim.dateResolved: ' + reim.dateResolved);
+    console.log('reim.description: ' + reim.description);
+    console.log('reim.reimbursementId: ' + reim.reimbursementId);
+    console.log('reim.resolver: ' + reim.resolver);
+    console.log('reim.status: ' + reim.status);
+    console.log('reim.type: ' + reim.type);
+    
+    console.log('reimbursement_type: ' + reim);
     let client: PoolClient;
     try {
         client = await connectionPool.connect();
         const today = getToday();
         const queryString = `
-            UPDATE reimbursement SET author = $1, amount = $2, date_submitted = $3, date_resolved = $4, description = $5, resolver = $6, status = $7
-            WHERE reimbursement_id = $8`;
-        const params = [reim.author, reim.amount, reim.dateSubmitted, today, reim.description, reim.resolver, reim.status, reim.reimbursementId];
+            UPDATE reimbursement SET date_resolved = $1, status = $2
+            WHERE reimbursement_id = $3`;
+        const params = [today, reim.status, reim.reimbursementId];
         const result = await client.query(queryString, params);
         return convertSqlReim(result); // returns JS notation instead of SQL notation
     } catch (err) {

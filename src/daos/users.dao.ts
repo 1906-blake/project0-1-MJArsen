@@ -54,7 +54,7 @@ export async function findByUsernameAndPassword(username: string, password: stri
         client = await connectionPool.connect();
         const queryString = `
         SELECT * FROM employee
-        LEFT JOIN roles USING (role_id)
+        JOIN roles USING (role_id)
         WHERE username = $1 AND pass = $2
         `;
         const result = await client.query(queryString, [username, password]);
@@ -106,7 +106,8 @@ export async function updateUser(user: User) {
     try {
         client = await connectionPool.connect(); // basically .then is everything after this
         const queryString = `
-            UPDATE employee SET username = $1, pass = $2, first_name = $3, last_name = $4, email = $5, role = $6
+            UPDATE employee
+            SET username = $1, pass = $2, first_name = $3, last_name = $4, email = $5, role = $6
             WHERE employee_id = $7`;
         const params = [user.username, user.password, user.firstName, user.lastName, user.email, user.role, user.userId];
         await client.query(queryString, params);

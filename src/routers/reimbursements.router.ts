@@ -1,6 +1,7 @@
 import express from 'express';
 import * as reimbursementsDao from '../daos/reimbursements.dao';
 import { authMiddleware } from '../middleware/auth.middleware';
+
 export const reimbursementsRouter = express.Router();
 
 /*************************************************
@@ -10,28 +11,41 @@ export const reimbursementsRouter = express.Router();
 /**
  * Find Reimbursement(s) by status ID
  */
-reimbursementsRouter.get('/status/:statusId',
+reimbursementsRouter.get('/status/:statusId', [
+    authMiddleware('The Coon', 'admin', 'finance-manager'),
     async (req, res) => {
-        const reim = await reimbursementsDao.findByStatusId(+req.params.statusId);
+        const statId = req.params.statusId;
+        const reim = await reimbursementsDao.findByStatusId(statId);
         res.json(reim);
-});
+    }]);
 
 /**
  * Find Reimbursement(s) by author ID (Employee ID)
  */
-reimbursementsRouter.get('/author/:userId',
+reimbursementsRouter.get('/author', [
+    authMiddleware('The Coon', 'admin', ' finance-manager'),
+
     async (req, res) => {
-        const reimbursements = await reimbursementsDao.findByAuthorId(req.params.userId);
-        res.json(reimbursements);
-});
+        if (req.session.user) {
+            console.log('req.session.user: ' + req.session.user);
+            console.log('req.session.userId: ' + req.session.user.userId);
+            const user = req.session.user.userId;
+            const foundReim = await reimbursementsDao.findByAuthorId(user);
+            console.log('returned reim by author: ' + foundReim);
+            res.json(foundReim);
+        } else {
+            res.status(400);
+            res.send('Not logged in');
+        }
+    }]);
 
 /*************************************************
  * POST Methods
  *************************************************/
 
- /**
-  * Create a new Reimbursement Request
-  */
+/**
+ * Create a new Reimbursement Request
+ */
 reimbursementsRouter.post('', async (req, res) => {
     console.log('In Reim Post');
     const result = await reimbursementsDao.save(req.body);
@@ -45,8 +59,11 @@ reimbursementsRouter.post('', async (req, res) => {
 /**
  * Allowed role: finance-manager / The Coon
  */
-reimbursementsRouter.patch('', [authMiddleware('admin', 'finance-manager', 'The Coon'),
+reimbursementsRouter.patch('', [
+    authMiddleware('admin', 'finance-manager', 'The Coon'),
     async (req, res) => {
-    const result = await reimbursementsDao.patch(req.body);
-    res.send(result);
-}]);
+        console.log(req.body);
+        const reim = req.body;
+        const result = await reimbursementsDao.patch(reim);
+        res.json(result);
+    }]);
