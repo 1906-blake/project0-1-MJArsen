@@ -5,6 +5,47 @@ import { convertSqlReim } from '../util/reimbursement.converter';
 
 // let reimbursements = [];
 
+export async function findAll() {
+    console.log('Finding all Reimbursements');
+    let client: PoolClient;
+    try {
+        client = await connectionPool.connect();
+        const result = await client.query(`SELECT r.*, rs.status_id, rs.status, rt.type_id, rt.reimbursement_type, r.reim_type,
+        author.username as author_username,
+        author.pass as author_password,
+        author.first_name as author_first_name,
+        author.last_name as author_last_name,
+        author.email as author_email,
+        author.role_id as author_roleId,
+        ar.role as author_role,
+        resolver.username as resolver_username,
+        resolver.pass as resolver_password,
+        resolver.first_name as resolver_first_name,
+        resolver.last_name as resolver_last_name,
+        resolver.email as resolver_email,
+        resolver.role_id as resolver_roleId,
+        rr.role as resolver_role
+        FROM reimbursement r
+            LEFT JOIN reimbursement_status rs ON (r.status = rs.status_id)
+            LEFT JOIN reimbursement_type rt ON (r.reim_type = rt.type_id)
+            LEFT JOIN employee author ON (author = author.employee_id)
+            LEFT JOIN roles ar ON (author.role_id = ar.role_id)
+            LEFT JOIN employee resolver ON (resolver = resolver.employee_id)
+            LEFT JOIN roles rr ON (resolver.role_id = rr.role_id)`);
+        const sqlReim = result.rows.map(convertSqlReim);
+        if (sqlReim) {
+            console.log('found some records');
+        }
+        return sqlReim;
+    } catch (err) {
+        console.log(err);
+    } finally {
+        client && client.release();
+    }
+    return undefined;
+}
+
+
 export async function findByReimId(reimId: number) {
     console.log('finding reimbursement by reimbursement_id: ' + reimId);
     let client: PoolClient;
@@ -26,7 +67,17 @@ export async function findByStatusId(statusId: number) {
     let client: PoolClient;
     try {
         client = await connectionPool.connect();
-        const result = await client.query('SELECT * FROM reimbursement WHERE status = $1', [statusId]);
+        const result = await client.query(`SELECT r.*, rs.status_name, rt.type_name, author.username as author_username, author.user_password as author_password, author.first_name as author_first_name, author.last_name as author_last_name, author.email as author_email, author.role_id as author_role_id, ar.role_type as author_role_type,
+        resolver.username as resolver_username, resolver.user_password as resolver_password, resolver.first_name as resolver_first_name, resolver.last_name as resolver_last_name, resolver.email as resolver_email, resolver.role_id as resolver_role_id, rr.role_type as resolver_role_type
+        FROM reimbursement r
+            LEFT JOIN reimbursement_status rs USING (status_id)
+            LEFT JOIN reimbursement_type rt USING (type_id)
+            LEFT JOIN app_user author ON (author_id = author.user_id)
+            LEFT JOIN user_role ar ON (author.role_id = ar.role_id)
+            LEFT JOIN app_user resolver ON (resolver = resolver.user_id)
+            LEFT JOIN user_role rr ON (resolver.role_id = rr.role_id)
+            WHERE status_id = $1`
+            , [statusId]);
         const sqlReim = result.rows[0];
         console.log('sqlReim in findByStatusId: ' + sqlReim);
         return sqlReim && convertSqlReim(sqlReim);
@@ -44,12 +95,17 @@ export async function findByAuthorId(authId: number) {
     try {
         client = await connectionPool.connect();
         const result = await client.query(`
-        SELECT * FROM reimbursement
-        LEFT JOIN employee AS au ON au.employee_id = reimbursement.author
-		LEFT JOIN employee AS RS ON RS.employee_id = reimbursement.resolver
-		INNER JOIN reimbursement_status ON reimbursement.status = reimbursement_status.status_id
-		INNER JOIN reimbursement_type ON reimbursement.status = reimbursement_type.type_id
-        WHERE reimbursement.author = $1`
+        SELECT r.*, rs.status_name, rt.type_name, author.username as author_username, author.user_password as author_password, author.first_name as author_first_name, author.last_name as author_last_name, author.email as author_email, author.role_id as author_role_id, ar.role_type as author_role_type,
+        resolver.username as resolver_username, resolver.user_password as resolver_password, resolver.first_name as resolver_first_name, resolver.last_name as resolver_last_name, resolver.email as resolver_email, resolver.role_id as resolver_role_id, rr.role_type as resolver_role_type
+        FROM reimbursement r
+            LEFT JOIN reimbursement_status rs USING (statusId)
+            LEFT JOIN reimbursement_type rt USING (typeId)
+            LEFT JOIN app_user author ON (author_id = author.userId)
+            LEFT JOIN user_role ar ON (author.role_id = ar.roleId)
+            LEFT JOIN app_user resolver ON (resolver = resolver.userId)
+            LEFT JOIN user_role rr ON (resolver.role_id = rr.role)
+            WHERE author_id = $1
+        `
         , [authId]);
         const sqlReim = result.rows.map(convertSqlReim);
 

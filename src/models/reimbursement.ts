@@ -14,7 +14,7 @@ export default class Reimbursement {
     status: ReimbursementStatus;             // foreign ey -> ReimbursementStatus, not null
     type: ReimbursementType;               // foreign key -> ReimbursementType
 
-    constructor(reimbursementId, author, amount, dateSubmitted, dateResolved, description, resolver, status, type) {
+    constructor(reimbursementId: number, author: User, amount: number, dateSubmitted: number, dateResolved: number, description: string, resolver: User, status: ReimbursementStatus, type: ReimbursementType) {
         this.reimbursementId = reimbursementId;
         this.author = author;
         this.amount = amount;

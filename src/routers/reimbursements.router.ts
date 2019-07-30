@@ -9,6 +9,15 @@ export const reimbursementsRouter = express.Router();
  *************************************************/
 
 /**
+ * Find all Reimbursements
+ */
+reimbursementsRouter.get('', [
+    // authMiddleware('The Coon', 'admin', 'finance-manager'),
+    async (req, res) => {
+        const reim = await reimbursementsDao.findAll();
+        res.json(reim);
+    }]);
+/**
  * Find Reimbursement(s) by status ID
  */
 reimbursementsRouter.get('/status/:statusId', [

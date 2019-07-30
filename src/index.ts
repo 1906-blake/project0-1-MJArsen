@@ -26,15 +26,7 @@ app.use((req, res, next) => {
 
 // set up body parser to convert json body to object stored on req.body
 app.use(bodyParser.json());
-
 app.use(sessionMiddleware);
-
-/*******************************************
- * Register Routers
- ******************************************/
-app.use(authRouter);
-app.use('/users', usersRouter);
-app.use('/reimbursements', reimbursementsRouter);
 
 /*******************************************
  * Needed for Project 1??
@@ -47,6 +39,14 @@ app.use((req, resp, next) => {
     resp.header('Access-Control-Allow-Methods', 'POST, GET, DELETE, PUT, PATCH');
     next();
   });
+
+/*******************************************
+ * Register Routers
+ ******************************************/
+app.use(authRouter);
+app.use('/users', usersRouter);
+app.use('/reimbursements', reimbursementsRouter);
+
 
 app.listen(port, () => {
     console.log('app started on port: ' + port);
