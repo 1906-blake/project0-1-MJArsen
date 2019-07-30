@@ -115,23 +115,12 @@ export async function patch(reim: Reimbursements) {
         console.log('nothing in oldReimbursement');
         return undefined;
     }
-    console.log('oldReim: ' + oldReimbursement.reimbursementId);
-    console.log('reim: ' + reim.reimbursementId);
+
     reim = {
         ...oldReimbursement,
         ...reim
     };
-    console.log('reim.amount: ' + reim.amount);
-    console.log('reim.author: ' + reim.author.userId);
-    console.log('reim.dateSubmitted: ' + reim.dateSubmitted);
-    console.log('reim.dateResolved: ' + reim.dateResolved);
-    console.log('reim.description: ' + reim.description);
-    console.log('reim.reimbursementId: ' + reim.reimbursementId);
-    console.log('reim.resolver: ' + reim.resolver);
-    console.log('reim.status: ' + reim.status);
-    console.log('reim.type: ' + reim.type);
-    
-    console.log('reimbursement_type: ' + reim);
+
     let client: PoolClient;
     try {
         client = await connectionPool.connect();

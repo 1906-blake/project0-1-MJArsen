@@ -83,8 +83,8 @@ The ReimbursementType model is used to track what kind of reimbursement is being
   [PATCH /users](#update-user)  \/
   [GET /reimbursements/status/:statusId](#find-reimbursements-by-status)  \/
   [GET /reimbursements/author/userId:userId](#find-reimbursements-by-user)  \/
-  [POST /reimbursements](#submit-reimbursement)  
-  [PATCH /reimbursements](#update-reimbursement)  
+  [POST /reimbursements](#submit-reimbursement)  \/
+  [PATCH /reimbursements](#update-reimbursement)  \/
 
 ### **Login**  
 * **URL**
