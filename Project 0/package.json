@@ -1,0 +1,45 @@
+{
+  "name": "project0-1-mjarsen",
+  "version": "1.0.0",
+  "description": "MJArsenault Project0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "start": "nodemon src/index.ts",
+    "test": "jest",
+    "lint": "stlint src/**/*.ts",
+    "lint:fix": "npm run lint -- --fix",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MJArsen/project0-1-MJArsen.git"
+  },
+  "author": "MJArsenault",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/1906-blake/project0-1-MJArsen/issues"
+  },
+  "homepage": "https://github.com/1906-blake/project0-1-MJArsen#readme",
+  "jest": {
+    "transform": {
+      "^.*\\.tsx?$": "ts-jest"
+    },
+    "testRegex": {}
+  },
+  "dependencies": {
+    "@types/express": "^4.17.0",
+    "@types/express-session": "^1.15.13",
+    "@types/pg": "^7.4.14",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-session": "^1.16.2",
+    "jest": "^24.8.0",
+    "nodemon": "^1.19.1",
+    "pg": "^7.11.0",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
+  }
+}
