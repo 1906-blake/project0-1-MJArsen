@@ -1,0 +1,19 @@
+{
+  "name": "project0-1-mjarsen",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1906-blake/project0-1-MJArsen.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/1906-blake/project0-1-MJArsen/issues"
+  },
+  "homepage": "https://github.com/1906-blake/project0-1-MJArsen#readme"
+}
