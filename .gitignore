@@ -34,7 +34,7 @@ build/Release
 
 # Dependency directories
 Project 0/node_modules/
-Project 1/node_modules/
+project1_react_app/node_modules/
 jspm_packages/
 
 # TypeScript v1 declaration files
