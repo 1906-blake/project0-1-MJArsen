@@ -31,15 +31,13 @@ reimbursementsRouter.get('/status/:statusId', [
 /**
  * Find Reimbursement(s) by author ID (Employee ID)
  */
-reimbursementsRouter.get('/author/', [
-    // authMiddleware('The Coon', 'admin', ' finance-manager'),
+reimbursementsRouter.get('/author', [
+    authMiddleware('The Coon', 'admin', ' finance-manager'),
 
     async (req, res) => {
-        // console.log('req.params: ' + req.params);
-        // console.log('req.params.userId: ' + req.params.userId);
         if (req.session.user) {
-            // console.log('req.params.user: ' + req.session.user);
-            // console.log('req.params.userId: ' + req.session.user.userId);
+            console.log('req.session.user: ' + req.session.user);
+            console.log('req.session.userId: ' + req.session.user.userId);
             const user = req.session.user.userId;
             const foundReim = await reimbursementsDao.findByAuthorId(user);
             console.log('returned reim by author: ' + foundReim);
