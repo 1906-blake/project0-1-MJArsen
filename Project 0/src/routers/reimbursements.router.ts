@@ -69,10 +69,9 @@ reimbursementsRouter.post('', async (req, res) => {
  * Allowed role: finance-manager / The Coon
  */
 reimbursementsRouter.patch('', [
-    authMiddleware('admin', 'finance-manager', 'The Coon'),
     async (req, res) => {
-        console.log(req.body);
-        const reim = req.body;
-        const result = await reimbursementsDao.patch(reim);
+        console.log('reim patch called: ' + req.body);
+        const id = req.body;
+        const result = await reimbursementsDao.patch(id);
         res.json(result);
     }]);

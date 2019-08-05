@@ -1,7 +1,59 @@
 import React from 'react';
+import User from '../../models/user';
 import { Link } from 'react-router-dom';
 import CoonLogo from '../../assets/Coon.logo.jpg';
-export class NavComponent extends React.Component {
+import { Button } from 'reactstrap';
+
+interface IState {
+  currentUser?: User
+}
+
+export class NavComponent extends React.Component<{}, IState> {
+
+  constructor(props: any) {
+    super(props);
+    this.state = ({
+      currentUser: {
+        userId: 0,
+        username: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        role: {
+          roleID: 0,
+          role: ''
+        }
+      }
+    });
+  }
+
+  componentDidMount = () => {
+    const currentUserString = localStorage.getItem('user');
+    const currentUser = currentUserString && JSON.parse(currentUserString);
+    this.setState({
+      currentUser
+    })
+  }
+
+  logout = () => {
+    localStorage.setItem('user', '');
+    this.setState ({
+      currentUser: {
+        userId: 0,
+        username: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        role: {
+          roleID: 0,
+          role: ''
+        }
+      }
+    });
+  }
+
   render() {
     return (
       <nav className="navbar navbar-toggleable-md navbar-expand-lg navbar-light bg-light display-front nav-pad">
@@ -15,9 +67,13 @@ export class NavComponent extends React.Component {
         </button>
         <div className="collapse navbar-collapse" id="navbarsExample04">
           <ul className="navbar-nav ml-auto margin-nav">
-            
+
             <li className="nav-item active">
-              <Link to="/sign-in" className="unset-anchor nav-link">Sign In</Link>
+              {
+                this.state.currentUser && (this.state.currentUser.userId)
+                  ? <Button id='sign-out' color="btn btn-warning" onClick={this.logout}><Link to='/sign-in'>Sign Out</Link></Button>
+                  : <Button id='sign-in' color="btn btn-danger"><Link to="/sign-in">Sign In</Link></Button>
+              }
             </li>
             <li className="nav-item active">
               <Link to="/" className="unset-anchor nav-link">Something Else</Link>
@@ -26,12 +82,11 @@ export class NavComponent extends React.Component {
               <div className="nav-link dropdown-toggle pointer" id="examples-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Reimbursements</div>
               <div className="dropdown-menu" aria-labelledby="examples-dropdown">
                 <div className="dropdown-item"><Link to="/reimbursements" className="unset-anchor nav-link active">Your Reimbursements</Link></div>
-                <div className="dropdown-item"><Link to="/reimbursements" className="unset-anchor nav-link active">Nothing new</Link></div>
+                <div className="dropdown-item"><Link to="/reimbursements" className="unset-anchor nav-link active">Create New Reimbursement</Link></div>
                 <div className="dropdown-item"><Link to="/reimbursements" className="unset-anchor nav-link active">More Reimbursements</Link></div>
               </div>
             </li>
             <li className="nav-item active">
-              {/* <Link to="/nested" className="unset-anchor nav-link">Log Out</Link> */}
             </li>
           </ul>
         </div>

@@ -1,13 +1,14 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { environment } from '../../environment';
+import User from '../../models/user';
 
 interface ISigninState {
     credentials: {
         username: string,
         password: string
     },
-    
+    currentUser?: User,
     errorMessage?: string
 }
 
@@ -79,7 +80,7 @@ export class SignIn extends React.Component<RouteComponentProps, ISigninState> {
                     value={this.state.credentials.password} required />
                 {this.state.errorMessage && <p id="error-message">{this.state.errorMessage}</p>}
                 <button className="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-                <p className="mt-5 mb-3 text-muted">&copy; 2017-2019</p>
+                <p className="mt-5 mb-3 text-muted">&copy; 2019-2019</p>
             </form>
         );
     }

@@ -3,12 +3,7 @@ import User from '../../models/user';
 import React, { Component } from 'react'
 import { environment } from '../../environment';
 import Reimbursements from '../../models/reimbursement';
-import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-
-
-interface IProps {
-    currentUser?: User
-}
+import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Button } from 'reactstrap';
 
 interface IState {
     reimbursements: Reimbursements[],
@@ -16,10 +11,11 @@ interface IState {
     selectionsDropdown: {
         isOpen: boolean,
         selection: string
-    }
+    },
+    currentUser?: User
 }
 
-export default class Reimbursement extends Component<IProps, IState> {
+export default class Reimbursement extends Component<{}, IState> {
     constructor(props: any) {
         super(props);
         this.state = {
@@ -32,9 +28,10 @@ export default class Reimbursement extends Component<IProps, IState> {
         };
     }
 
+    // This is what will be called to be rendered when this "page" is opened
     async componentDidMount() {
         // this.getReimbursements();
-        // this.getUsersReimbursements();
+        this.getUsersReimbursements();
         // this.getEmployees();
 
     }
@@ -73,7 +70,7 @@ export default class Reimbursement extends Component<IProps, IState> {
     }
 
     getUsersReimbursementsByStatus = async () => {
-        const resp = await fetch(environment.context + '/reimbursements/status/' , {
+        const resp = await fetch(environment.context + '/reimbursements/status/', {
             credentials: 'include'
         });
         // console.log('resp: ' + resp.json());
@@ -103,6 +100,60 @@ export default class Reimbursement extends Component<IProps, IState> {
         });
     }
 
+    approveReim = async (reimbursementId: any)  => {
+        const body = {
+            reimbursementId,
+            status: {
+                statusId: 2
+            }
+
+        }
+        await fetch('http://localhost:8012/reimbursements', {
+            method: 'PATCH',
+            credentials: 'include',
+            body: JSON.stringify(body),
+            headers: {
+                'content-type': 'application/json'
+            }
+        });
+        this.getReimbursements();
+        
+    }
+
+    denyReim = async (reimbursementId: any) => {
+        const body = {
+            reimbursementId,
+            status: {
+                statusId: 3
+            }
+
+        }
+        await fetch('http://localhost:8012/reimbursements', {
+            method: 'PATCH',
+            credentials: 'include',
+            body: JSON.stringify(body),
+            headers: {
+                'content-type': 'application/json'
+            }
+        });
+        this.getReimbursements();
+    }
+
+    getButtons = (reimId: number, reimSta: number) => {
+        const currentUser = localStorage.getItem('user');
+        const user = currentUser && JSON.parse(currentUser);
+        const userId = user.userId;
+        console.log('userId: ' + user.userId);
+        if (user.role.roleID === 1) {
+            if (userId === 1 || userId === 6 || userId === 7) {
+                if (reimSta === 1) return (<td>
+                        <Button color='success' onClick={() => this.approveReim(reimId)}>Approve</Button>
+                        <Button color='warning' onClick={() => this.denyReim(reimId)}>Deny</Button>
+                    </td>)
+            }
+        }
+    }
+
     render() {
         const reimbursements = this.state.reimbursements;
         return (
@@ -118,7 +169,7 @@ export default class Reimbursement extends Component<IProps, IState> {
                         <DropdownItem onClick={this.getReimbursements}>All</DropdownItem>
                         <DropdownItem divider />
                         <DropdownItem onClick={this.getUsersReimbursements}>Your Reimbursements</DropdownItem>
-                        <DropdownItem> </DropdownItem>        
+                        <DropdownItem> </DropdownItem>
                     </DropdownMenu>
                 </ButtonDropdown>
                 <table className="table table-striped table-light">
@@ -148,6 +199,7 @@ export default class Reimbursement extends Component<IProps, IState> {
                                     <td>{reimbursement.resolver && `${reimbursement.resolver.username}`}</td>
                                     <td>{reimbursement.status.status}</td>
                                     <td>{reimbursement.dateResolved && `${reimbursement.dateResolved.substr(5, 2)}/${reimbursement.dateResolved.substr(8, 2)}/${reimbursement.dateResolved.substr(0, 4)}`}</td>
+                                    {this.getButtons(reimbursement.reimbursementId, reimbursement.status.statusId)}
                                 </tr>)
                         }
                     </tbody>
