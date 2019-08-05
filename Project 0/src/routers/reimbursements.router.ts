@@ -12,7 +12,7 @@ export const reimbursementsRouter = express.Router();
  * Find all Reimbursements
  */
 reimbursementsRouter.get('', [
-    // authMiddleware('The Coon', 'admin', 'finance-manager'),
+    authMiddleware('The Coon', 'admin', 'finance-manager'),
     async (req, res) => {
         const reim = await reimbursementsDao.findAll();
         res.json(reim);
@@ -21,7 +21,7 @@ reimbursementsRouter.get('', [
  * Find Reimbursement(s) by status ID
  */
 reimbursementsRouter.get('/status/:statusId', [
-    authMiddleware('The Coon', 'admin', 'finance-manager'),
+    // authMiddleware('The Coon', 'admin', 'finance-manager'),
     async (req, res) => {
         const statId = req.params.statusId;
         const reim = await reimbursementsDao.findByStatusId(statId);
@@ -32,7 +32,7 @@ reimbursementsRouter.get('/status/:statusId', [
  * Find Reimbursement(s) by author ID (Employee ID)
  */
 reimbursementsRouter.get('/author', [
-    authMiddleware('The Coon', 'admin', ' finance-manager'),
+    // authMiddleware('The Coon', 'admin', ' finance-manager'),
 
     async (req, res) => {
         if (req.session.user) {

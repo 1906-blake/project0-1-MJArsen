@@ -33,9 +33,9 @@ export default class Reimbursement extends Component<IProps, IState> {
     }
 
     async componentDidMount() {
-        //   this.getReimbursements();
-        this.getUsersReimbursements();
-        this.getEmployees();
+        // this.getReimbursements();
+        // this.getUsersReimbursements();
+        // this.getEmployees();
 
     }
 
@@ -62,7 +62,7 @@ export default class Reimbursement extends Component<IProps, IState> {
     }
 
     getUsersReimbursements = async () => {
-        const resp = await fetch(environment.context + '/reimbursements/author/', {
+        const resp = await fetch(environment.context + '/reimbursements/author', {
             credentials: 'include'
         });
         // console.log('resp: ' + resp.json());

@@ -7,6 +7,7 @@ interface ISigninState {
         username: string,
         password: string
     },
+    
     errorMessage?: string
 }
 
