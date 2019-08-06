@@ -13,7 +13,8 @@ export async function findAll() {
         // create the SQL query to be sent to the DB
         const result = await client.query(`
         SELECT * FROM employee
-        LEFT JOIN roles USING (role_id);
+        LEFT JOIN roles USING (role_id)
+        ORDER BY employee.employee_id
         `);
         // convert result from sql object to js object
         return result.rows.map(convertSqlUser);

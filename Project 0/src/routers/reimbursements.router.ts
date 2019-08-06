@@ -48,6 +48,20 @@ reimbursementsRouter.get('/author', [
         }
     }]);
 
+    reimbursementsRouter.get('/status', [
+        // authMiddleware('The Coon', 'admin', 'finance-manager'),
+        async (req, res) => {
+            const reim = await reimbursementsDao.getStatus();
+            res.json(reim);
+        }]);
+
+    reimbursementsRouter.get('/types', [
+        // authMiddleware('The Coon', 'admin', 'finance-manager'),
+        async (req, res) => {
+            const reim = await reimbursementsDao.getTypes();
+            res.json(reim);
+        }]);
+
 /*************************************************
  * POST Methods
  *************************************************/

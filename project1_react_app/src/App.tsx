@@ -4,27 +4,34 @@ import './include/bootstrap';
 import { } from "module";
 import React from 'react';
 import { } from 'reactstrap';
-import { store } from './store';
-import { Provider } from 'react-redux';
+// import { store } from './store';
+// import { Provider } from 'react-redux';
 import { SignIn } from './components/signin/signin.component';
 import { NavComponent } from './components/nav/nav.component';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { UsersComponent } from './components/users/users.component';
 import { NotFound } from './components/not-found/not-found.componenet';
-import Reimbursement from './components/reimbursements/reimbursement.component';
+import ReimbursementAll from './components/reimbursements/reimbursement.component';
+import ReimbursementByStatus from './components/reimbursements/reimbursements.status.component';
+import NewReimbursement from './components/reimbursements/reimbursement.create.component';
+import ReimbursementByEmployee from './components/reimbursements/reimbursements.employee.component';
+
 
 const App: React.FC = () => {
   return (
     // the redux store needs to wrap all of the rest of our components
-    <Provider store={store}>
+    // <Provider store={store}>
       <BrowserRouter>
         <div className="App">
           <NavComponent />
           <Switch>
             <Route path='/sign-in' component={SignIn} />
-            <Route path='/reimbursements' component={Reimbursement} />
-            <Route path='/reimbursements/status/:statusId' component={Reimbursement} />
+            <Route path='/reimbursements/status' component={ReimbursementByStatus} />
+            <Route path='/reimbursements/employee' component={ReimbursementByEmployee} />
+            <Route path='/new/reimbursement' component={NewReimbursement} />
+            <Route path='/reimbursements' component={ReimbursementAll} />
             <Route path='/user/id' component={UsersComponent} />
+            <Route path='/users' component={UsersComponent} />
             <Route component={NotFound} />
 
             {/* <Route path='/dashboard' component={DashboardComponent}/>
@@ -40,7 +47,7 @@ const App: React.FC = () => {
           </Switch>
         </div>
       </BrowserRouter>
-    </Provider>
+    // </Provider>
   );
 }
 

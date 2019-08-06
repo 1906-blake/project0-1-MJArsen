@@ -3,7 +3,41 @@ import { connectionPool } from '../util/connection.util';
 import { PoolClient } from 'pg';
 import { convertSqlReim } from '../util/reimbursement.converter';
 
-// let reimbursements = [];
+export async function getStatus() {
+    console.log('Grabbing all Status');
+    let client: PoolClient;
+    try {
+        client = await connectionPool.connect();
+        const result = await client.query(`SELECT * FROM reimbursement_status`);
+         console.log('result: ' + result);
+         console.log('result.rows: ' + result.rows);
+        return result.rows;
+        // returning an array of reim status
+    } catch (err) {
+        console.log(err);
+    } finally {
+        client && client.release();
+    }
+    return undefined;
+}
+
+export async function getTypes() {
+    console.log('Grabbing all reim Types');
+    let client: PoolClient;
+    try {
+        client = await connectionPool.connect();
+        const result = await client.query(`SELECT * FROM reimbursement_type`);
+         console.log('result: ' + result);
+         console.log('result.rows: ' + result.rows);
+        return result.rows;
+        // returning an array of reim status
+    } catch (err) {
+        console.log(err);
+    } finally {
+        client && client.release();
+    }
+    return undefined;
+}
 
 export async function findAll() {
     console.log('Finding all Reimbursements');
@@ -96,9 +130,9 @@ export async function findByStatusId(statusId: number) {
         LEFT JOIN roles rr ON (resolver.role_id = rr.role_id)
     WHERE r.status= $1`
             , [statusId]);
-        const sqlReim = result.rows[0];
-        console.log('sqlReim in findByStatusId: ' + sqlReim);
-        return sqlReim && convertSqlReim(sqlReim);
+        const sqlReim = result.rows.map(convertSqlReim);
+        console.log('found some reimbursements');
+        return sqlReim;
     } catch (err) {
         console.log(err);
     } finally {
@@ -236,7 +270,7 @@ export async function patch(reim: Reimbursements) {
  * (Working)
  */
 export async function submitReim(reimbursement: Reimbursements) {
-    console.log('submiting reimbursement: ' + reimbursement.reimbursementId);
+    console.log('submitting reimbursement: ' + reimbursement.reimbursementId);
     let client: PoolClient;
     try {
         client = await connectionPool.connect(); // basically .then is everything after this

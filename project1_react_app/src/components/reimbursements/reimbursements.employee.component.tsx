@@ -1,111 +1,78 @@
-import '../../index.scss';
+import React, { Component } from 'react';
+import Reimbursement from '../../models/reimbursement';
 import User from '../../models/user';
-import React, { Component } from 'react'
+// import Status from '../../models/reimbursement.status';
+import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Button } from 'reactstrap';
 import { environment } from '../../environment';
-import Reimbursements from '../../models/reimbursement';
-import { Button } from 'reactstrap';
+
 
 interface IState {
-    reimbursements: Reimbursements[],
-    employees: [],
-    selectionsDropdown: {
+    reimbursements: Reimbursement[],
+    users: User[],
+    employeesDropdown: {
         isOpen: boolean,
         selection: string
-    },
-    currentUser?: User
+    }
 }
 
-export default class ReimbursementAll extends Component<{}, IState> {
+
+export default class ReimbursementByEmployee extends Component<{}, IState> {
+
     constructor(props: any) {
         super(props);
         this.state = {
             reimbursements: [],
-            employees: [],
-            selectionsDropdown: {
+            users: [],
+            employeesDropdown: {
                 isOpen: false,
-                selection: 'Yours'
+                selection: 'Pending'
             }
         }
     }
 
-    // This is what will be called to be rendered when this "page" is opened
     async componentDidMount() {
-        // this.getReimbursements();
-        this.getUsersReimbursements();
-        // this.getEmployees();
-
+        this.getByUsers();
+        this.getReimbursements();
     }
-
-    getEmployees = async () => {
-        const resp = await fetch(environment.context + '/users', {
+    
+    getByUsers = async() => {
+        const resp = await fetch(environment.context +'/users', {
             credentials: 'include'
         });
-
-        const employees = await resp.json();
+        const usersFromServer = await resp.json();
+        console.log('usersFromServer: '+ usersFromServer);
         this.setState({
-            employees
-        })
+            users: usersFromServer,
+            employeesDropdown: {
+                ...this.state.employeesDropdown,
+                selection: usersFromServer[0] && usersFromServer[0].employee.employee_id
+            }
+        });
     }
-
+    
     getReimbursements = async () => {
         const resp = await fetch(environment.context + '/reimbursements', {
             credentials: 'include'
         });
         // console.log('resp: ' + resp.json());
         const reimbursements = await resp.json();
+        
         this.setState({
-            reimbursements,
-            selectionsDropdown: {
-                ...this.state.selectionsDropdown,
+            users: reimbursements,
+            employeesDropdown: {
+                ...this.state.employeesDropdown,
                 selection: 'All'
             }
         });
     }
 
-    getUsersReimbursements = async () => {
-        const resp = await fetch(environment.context + '/reimbursements/author', {
-            credentials: 'include'
-        });
-        // console.log('resp: ' + resp.json());
-        const reimbursements = await resp.json();
+    toggleDD = () => {
         this.setState({
-            reimbursements,
-            selectionsDropdown: {
-                ...this.state.selectionsDropdown,
-                selection: 'Yours'
+            employeesDropdown: {
+                ...this.state.employeesDropdown,
+                isOpen: !this.state.employeesDropdown.isOpen
             }
-        });
-    }
-
-    getUsersReimbursementsByStatus = async () => {
-        const resp = await fetch(environment.context + '/reimbursements/status/', {
-            credentials: 'include'
-        });
-        // console.log('resp: ' + resp.json());
-        const reimbursements = await resp.json();
-        this.setState({
-            reimbursements
-        });
-    }
-
-    getUsersReimbursements2 = async () => {
-        const resp = await fetch(environment.context + '/reimbursements/author/', {
-            credentials: 'include'
-        });
-        // console.log('resp: ' + resp.json());
-        const reimbursements = await resp.json();
-        this.setState({
-            reimbursements
-        });
-    }
-
-    toggleSelectionsDropdown = () => {
-        this.setState({
-            selectionsDropdown: {
-                ...this.state.selectionsDropdown,
-                isOpen: !this.state.selectionsDropdown.isOpen
-            }
-        });
+        })
     }
 
     approveReim = async (reimbursementId: any) => {
@@ -124,6 +91,7 @@ export default class ReimbursementAll extends Component<{}, IState> {
                 'content-type': 'application/json'
             }
         });
+
         this.getReimbursements();
 
     }
@@ -150,10 +118,9 @@ export default class ReimbursementAll extends Component<{}, IState> {
     getApDeButtons = (reimId: number, reimSta: number) => {
         const currentUser = localStorage.getItem('user');
         const user = currentUser && JSON.parse(currentUser);
-        const userRoleID = user.role.roleID;
         console.log('userId: ' + user.userId);
-        if (userRoleID=== 1 ) {
-            // if (userId=== 1 || userId === 6 || userId === 7) {
+        if (user.role.roleID === 1) {
+            // if (userId.role.roleID === 1 || userId === 6 || userId === 7) {
                 if (reimSta === 1) return (<td>
                     <Button color='success' onClick={() => this.approveReim(reimId)}>Approve</Button>
                     <Button color='warning' onClick={() => this.denyReim(reimId)}>Deny</Button>
@@ -165,26 +132,26 @@ export default class ReimbursementAll extends Component<{}, IState> {
     render() {
         const reimbursements = this.state.reimbursements;
         return (
-            <div id="card-table-container">
-                {/* <ButtonDropdown id="card-game-dropdown"
-                    isOpen={this.state.selectionsDropdown.isOpen}
-                    toggle={this.toggleSelectionsDropdown}>
+            <div id="reimbursements-table-container">
+                <h1 className="h3 mb-3 font-weight-normal">View Reimbursements By Employee</h1>
+                <ButtonDropdown id="reimbursements-status-dropdown"
+                    isOpen={this.state.employeesDropdown.isOpen}
+                    toggle={this.toggleDD}>
 
                     <DropdownToggle caret>
-                        {this.state.selectionsDropdown.selection}
+                        {this.state.employeesDropdown.selection}
                     </DropdownToggle>
                     <DropdownMenu right>
-                        <DropdownItem onClick={this.getUsersReimbursements}>Your Reimbursements</DropdownItem>                        
-                        {
-                            this.state.currentUser && (this.state.currentUser.role.roleID === 1)
-                            ? <div><DropdownItem divider /> <DropdownItem onClick={this.getReimbursements}>All Reimbursements</DropdownItem> </div>
-                            : null
-                        }
-                        <DropdownItem> </DropdownItem>
+                        <DropdownItem onClick={this.getReimbursements}>All</DropdownItem>
+                        {/* {
+                            employees.map(employee =>
+                                <DropdownItem key={employee.author.username} onClick={() => this.getByAuthor(employee.author.userId)}>
+                                {employee.author.lastName}, {employee.author.firstName}
+                                            </DropdownItem>)
+                        } */}
+                       
                     </DropdownMenu>
-                </ButtonDropdown> */}
-
-
+                </ButtonDropdown>
                 <table className="table table-striped table-light">
                     <thead>
                         <tr>
@@ -197,7 +164,6 @@ export default class ReimbursementAll extends Component<{}, IState> {
                             <th scope="col">Reimbursement Overseer</th>
                             <th scope="col">Current Status</th>
                             <th scope="col">Date Resolved</th>
-                            {/* <th scope="col">Options</th> */}
                         </tr>
                     </thead>
                     <tbody>
@@ -210,7 +176,7 @@ export default class ReimbursementAll extends Component<{}, IState> {
                                     <td>${reimbursement.amount.toFixed(2)}</td>
                                     <td>{reimbursement.type.type}</td>
                                     <td>{reimbursement.dateSubmitted.substr(5, 2)}/{reimbursement.dateSubmitted.substr(8, 2)}/{reimbursement.dateSubmitted.substr(0, 4)}</td>
-                                    <td>{reimbursement.resolver && `${reimbursement.resolver.username}`}</td>
+                                    <td>{reimbursement.resolver && `${reimbursement.resolver.lastName}, ${reimbursement.resolver.firstName}`}</td>
                                     <td>{reimbursement.status.status}</td>
                                     <td>{reimbursement.dateResolved && `${reimbursement.dateResolved.substr(5, 2)}/${reimbursement.dateResolved.substr(8, 2)}/${reimbursement.dateResolved.substr(0, 4)}`}</td>
                                     {this.getApDeButtons(reimbursement.reimbursementId, reimbursement.status.statusId)}
@@ -220,5 +186,5 @@ export default class ReimbursementAll extends Component<{}, IState> {
                 </table>
             </div>
         )
-    }
+    };
 }
