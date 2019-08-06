@@ -31,6 +31,15 @@ reimbursementsRouter.get('/status/:statusId', [
 /**
  * Find Reimbursement(s) by author ID (Employee ID)
  */
+reimbursementsRouter.get('/author/:userId', [
+    // authMiddleware('The Coon', 'admin', ' finance-manager'),
+    async (req, res) => {
+        const user = req.params.userId;
+        const foundReim = await reimbursementsDao.findByAuthorId(user);
+        console.log('returned reim by author: ' + foundReim);
+        res.json(foundReim);
+    }]);
+
 reimbursementsRouter.get('/author', [
     // authMiddleware('The Coon', 'admin', ' finance-manager'),
 
@@ -48,19 +57,20 @@ reimbursementsRouter.get('/author', [
         }
     }]);
 
-    reimbursementsRouter.get('/status', [
-        // authMiddleware('The Coon', 'admin', 'finance-manager'),
-        async (req, res) => {
-            const reim = await reimbursementsDao.getStatus();
-            res.json(reim);
-        }]);
 
-    reimbursementsRouter.get('/types', [
-        // authMiddleware('The Coon', 'admin', 'finance-manager'),
-        async (req, res) => {
-            const reim = await reimbursementsDao.getTypes();
-            res.json(reim);
-        }]);
+reimbursementsRouter.get('/status', [
+    // authMiddleware('The Coon', 'admin', 'finance-manager'),
+    async (req, res) => {
+        const reim = await reimbursementsDao.getStatus();
+        res.json(reim);
+    }]);
+
+reimbursementsRouter.get('/types', [
+    // authMiddleware('The Coon', 'admin', 'finance-manager'),
+    async (req, res) => {
+        const reim = await reimbursementsDao.getTypes();
+        res.json(reim);
+    }]);
 
 /*************************************************
  * POST Methods

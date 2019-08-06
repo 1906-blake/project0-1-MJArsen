@@ -27,7 +27,7 @@ const App: React.FC = () => {
           <Switch>
             <Route path='/sign-in' component={SignIn} />
             <Route path='/reimbursements/status' component={ReimbursementByStatus} />
-            <Route path='/reimbursements/employee' component={ReimbursementByEmployee} />
+            <Route path='/reimbursements/employees' component={ReimbursementByEmployee} />
             <Route path='/new/reimbursement' component={NewReimbursement} />
             <Route path='/reimbursements' component={ReimbursementAll} />
             <Route path='/user/id' component={UsersComponent} />

@@ -88,16 +88,16 @@ export default class ReimbursementAll extends Component<{}, IState> {
         });
     }
 
-    getUsersReimbursements2 = async () => {
-        const resp = await fetch(environment.context + '/reimbursements/author/', {
-            credentials: 'include'
-        });
-        // console.log('resp: ' + resp.json());
-        const reimbursements = await resp.json();
-        this.setState({
-            reimbursements
-        });
-    }
+    // getUsersReimbursements2 = async () => {
+    //     const resp = await fetch(environment.context + '/reimbursements/author', {
+    //         credentials: 'include'
+    //     });
+    //     // console.log('resp: ' + resp.json());
+    //     const reimbursements = await resp.json();
+    //     this.setState({
+    //         reimbursements
+    //     });
+    // }
 
     toggleSelectionsDropdown = () => {
         this.setState({

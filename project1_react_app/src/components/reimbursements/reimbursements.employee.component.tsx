@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import Reimbursement from '../../models/reimbursement';
-import User from '../../models/user';
 // import Status from '../../models/reimbursement.status';
 import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Button } from 'reactstrap';
 import { environment } from '../../environment';
+import User from '../../models/user';
 
 
 interface IState {
@@ -25,40 +25,55 @@ export default class ReimbursementByEmployee extends Component<{}, IState> {
             users: [],
             employeesDropdown: {
                 isOpen: false,
-                selection: 'Pending'
+                selection: 'All'
             }
         }
     }
 
     async componentDidMount() {
-        this.getByUsers();
+        this.getUsers();
         this.getReimbursements();
     }
-    
-    getByUsers = async() => {
-        const resp = await fetch(environment.context +'/users', {
+
+    getUsers = async () => {
+        const resp = await fetch(environment.context + '/users', {
             credentials: 'include'
         });
-        const usersFromServer = await resp.json();
-        console.log('usersFromServer: '+ usersFromServer);
+        const users = await resp.json();
         this.setState({
-            users: usersFromServer,
+            ...this.state,
+            users
+        });
+    }
+
+    getReimByUser = async (userName: string, userId: number) => {
+        console.log('getReimByUser userName: ' + userName);
+        console.log('getReimByUser userId: ' + userId);
+        const resp = await fetch(environment.context + '/reimbursements/author/' + userId, {
+            credentials: 'include'
+        });
+        const reimFromServer = await resp.json();
+        // console.log('from server: ' + reimFromServer);
+        // console.log('from server @ 0: ' + reimFromServer[0]);
+        this.setState({
+            ...this.state,
+            reimbursements: reimFromServer,
             employeesDropdown: {
                 ...this.state.employeesDropdown,
-                selection: usersFromServer[0] && usersFromServer[0].employee.employee_id
+                selection: userName
             }
         });
     }
-    
+
     getReimbursements = async () => {
         const resp = await fetch(environment.context + '/reimbursements', {
             credentials: 'include'
         });
         // console.log('resp: ' + resp.json());
         const reimbursements = await resp.json();
-        
         this.setState({
-            users: reimbursements,
+            ...this.state,
+            reimbursements,
             employeesDropdown: {
                 ...this.state.employeesDropdown,
                 selection: 'All'
@@ -121,16 +136,17 @@ export default class ReimbursementByEmployee extends Component<{}, IState> {
         console.log('userId: ' + user.userId);
         if (user.role.roleID === 1) {
             // if (userId.role.roleID === 1 || userId === 6 || userId === 7) {
-                if (reimSta === 1) return (<td>
-                    <Button color='success' onClick={() => this.approveReim(reimId)}>Approve</Button>
+            if (reimSta === 1) return (<td>
+                <Button color='success' onClick={() => this.approveReim(reimId)}>Approve</Button>
                     <Button color='warning' onClick={() => this.denyReim(reimId)}>Deny</Button>
-                </td>)
+            </td>)
             // }
         }
     }
 
     render() {
         const reimbursements = this.state.reimbursements;
+        const employees = this.state.users;
         return (
             <div id="reimbursements-table-container">
                 <h1 className="h3 mb-3 font-weight-normal">View Reimbursements By Employee</h1>
@@ -142,14 +158,15 @@ export default class ReimbursementByEmployee extends Component<{}, IState> {
                         {this.state.employeesDropdown.selection}
                     </DropdownToggle>
                     <DropdownMenu right>
-                        <DropdownItem onClick={this.getReimbursements}>All</DropdownItem>
-                        {/* {
-                            employees.map(employee =>
-                                <DropdownItem key={employee.author.username} onClick={() => this.getByAuthor(employee.author.userId)}>
-                                {employee.author.lastName}, {employee.author.firstName}
-                                            </DropdownItem>)
-                        } */}
-                       
+                        <DropdownItem onClick={this.getUsers}>All</DropdownItem>
+                        {
+                            employees.map(employee=>
+                                <DropdownItem value={employee.username} key={'userId-' + employee.userId} onClick={() => this.getReimByUser(employee.username, employee.userId)}>
+                                    {employee.username}
+                                </DropdownItem>
+                            )
+                        }
+
                     </DropdownMenu>
                 </ButtonDropdown>
                 <table className="table table-striped table-light">

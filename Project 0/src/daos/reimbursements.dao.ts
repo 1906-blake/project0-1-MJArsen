@@ -174,7 +174,7 @@ export async function findByAuthorId(authId: number) {
         LEFT JOIN roles ar ON (author.role_id = ar.role_id)
         LEFT JOIN employee resolver ON (resolver = resolver.employee_id)
         LEFT JOIN roles rr ON (resolver.role_id = rr.role_id)
-    WHERE author.role_id = $1`
+    WHERE author.employee_id = $1`
             , [authId]);
         const sqlReim = result.rows.map(convertSqlReim);
 
@@ -182,23 +182,6 @@ export async function findByAuthorId(authId: number) {
         //     console.log(element);
         // });
         return sqlReim; // && convertSqlReim(sqlReim);
-    } catch (err) {
-        console.log(err);
-    } finally {
-        client && client.release();
-    }
-    return undefined;
-}
-
-export async function findByUserId(authorId: number) {
-    console.log('finding reimbursement by authorId: ' + authorId);
-    let client: PoolClient;
-    try {
-        client = await connectionPool.connect();
-        const queryString = `SELECT * FROM reimbursement WHERE employee_id = $1`;
-        const result = await client.query(queryString, [authorId]);
-        const sqlReim = result.rows;
-        return sqlReim && convertSqlReim(sqlReim);
     } catch (err) {
         console.log(err);
     } finally {
