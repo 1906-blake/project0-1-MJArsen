@@ -36,7 +36,7 @@ usersRouter.get('/:id',
  */
 usersRouter.patch('', async (req, res) => {
     const result  = req.body;
-    console.log('patch result= ' + result + ' req.body = ' + req.body);
+    console.log('patch result= ' + result.userId + ' req.body = ' + req.body);
     const user = await userDao.updateUser(result);
     res.json(user);
     // } else {

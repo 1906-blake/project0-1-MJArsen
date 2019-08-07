@@ -135,12 +135,10 @@ export default class ReimbursementByEmployee extends Component<{}, IState> {
         const user = currentUser && JSON.parse(currentUser);
         console.log('userId: ' + user.userId);
         if (user.role.roleID === 1) {
-            // if (userId.role.roleID === 1 || userId === 6 || userId === 7) {
             if (reimSta === 1) return (<td>
                 <Button color='success' onClick={() => this.approveReim(reimId)}>Approve</Button>
                     <Button color='warning' onClick={() => this.denyReim(reimId)}>Deny</Button>
             </td>)
-            // }
         }
     }
 

@@ -102,7 +102,7 @@ export class NavComponent extends React.Component<{}, IState> {
               }
               </li>
               <li className='nav-item active' id='profile'>
-                <h4><Link to="/userprofile" className="unset-anchor nav-link">Profile</Link></h4>
+                <h4><Link to="/user/profile" className="unset-anchor nav-link">Profile</Link></h4>
               </li>
               <li className="nav-item active dropdown" >
                 <h4><div className="nav-link dropdown-toggle pointer" id="examples-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Reimbursements</div>

@@ -94,13 +94,15 @@ export async function saveNewUser(user: User) {
 export async function updateUser(user: User) {
     // console.log('updateing: ' + user.userId);
     const oldUser = await findByUserid(+ user.userId);
+    const newUser = user;
+    console.log('newUser: ' + newUser);
     // console.log('oldUser: ' + oldUser + 'oldUser.role: ' + oldUser.role);
     if (!oldUser) {
         return undefined;
     }
     user = {
         ...oldUser,
-        ...user
+        ...newUser
     };
     console.log(user);
     let client: PoolClient;
@@ -108,9 +110,9 @@ export async function updateUser(user: User) {
         client = await connectionPool.connect(); // basically .then is everything after this
         const queryString = `
             UPDATE employee
-            SET username = $1, pass = $2, first_name = $3, last_name = $4, email = $5, role = $6
-            WHERE employee_id = $7`;
-        const params = [user.username, user.password, user.firstName, user.lastName, user.email, user.role, user.userId];
+            SET  first_name = $1, last_name = $2, email = $3
+            WHERE employee_id = $4`;
+        const params = [ user.firstName, user.lastName, user.email, user.userId];
         await client.query(queryString, params);
         return convertSqlUser(user); // returns JS notation instead of SQL notation
     } catch (err) {

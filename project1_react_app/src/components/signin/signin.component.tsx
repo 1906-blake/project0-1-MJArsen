@@ -49,7 +49,7 @@ export class SignIn extends React.Component<RouteComponentProps, ISigninState> {
             console.log(user);
     
             localStorage.setItem('user', JSON.stringify(user));
-            this.props.history.push('/reimbursements'); // navigate pages
+            this.props.history.push('/user/profile'); // navigate pages
         } catch (err) {
             console.log(err);
             console.log('invalid credentials');

@@ -42,7 +42,7 @@ export default class NewReimbursement extends React.Component<{}, IState> {
     }
 
     async componentDidMount() {
-        this.getAuthor();
+        this.getAuthors();
         this.getType();
     }
 
@@ -59,7 +59,7 @@ export default class NewReimbursement extends React.Component<{}, IState> {
         });
     }
 
-    getAuthor = async () => {
+    getAuthors = async () => {
         const resp = await fetch(environment.context + '/users', {
             credentials: 'include'
         });
