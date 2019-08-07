@@ -49,6 +49,7 @@ export class SignIn extends React.Component<RouteComponentProps, ISigninState> {
             console.log(user);
     
             localStorage.setItem('user', JSON.stringify(user));
+            console.log('props: ', this.props.children);
             this.props.history.push('/user/profile'); // navigate pages
         } catch (err) {
             console.log(err);

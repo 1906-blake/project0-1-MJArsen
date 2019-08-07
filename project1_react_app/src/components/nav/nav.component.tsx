@@ -42,27 +42,17 @@ export class NavComponent extends React.Component<{}, IState> {
   }
 
   // componentDidUpdate(prevProps: any, prevState: any) {
-  //   if(this.state.currentUser !== prevState.currentUser){
+  //   if(prevState.currentUser !== this.state.currentUser){
   //     this.getUser();
   //   }
   // }
 
+  
+  
   logout = () => {
-    localStorage.setItem('user', '');
-    this.setState({
-      currentUser: {
-        userId: 0,
-        username: '',
-        password: '',
-        firstName: '',
-        lastName: '',
-        email: '',
-        role: {
-          roleID: 0,
-          role: ''
-        }
-      }
-    });
+    localStorage.clear();
+    this.getUser();  
+    
   }
 
   render() {
@@ -75,7 +65,7 @@ export class NavComponent extends React.Component<{}, IState> {
         </div>
         <div className="nav-item active">
           <div>
-            <h3><strong>{this.state.currentUser && this.state.currentUser.username}</strong></h3>
+            <h2><strong>{this.state.currentUser && this.state.currentUser.userId && this.state.currentUser.username}</strong></h2>
           </div>
         </div>
 
